@@ -60,8 +60,11 @@ void get_uptime(char *filename){
 
 
 int main() {
+    typedef struct{
+        char name[100];
+    } os_data; os_data os;
+
     char name_needle[12] = "PRETTY_NAME";
-    char os_result [100];
     char kernel_needle[14] = "Linux version";
     char kernel_result[150];
     char cpu_needle[11] = "model name";
@@ -70,11 +73,11 @@ int main() {
     char memory_result[100];
 
     //OS VERSION BLOCK - - - - - - - - - - - - - -
-    get_info("/etc/os-release", name_needle, os_result, sizeof(os_result));
-    char *os_result_cleanup = (strstr(os_result, "=")) + 2;
-    char *os_char_toRemove = strrchr(os_result, '"');
+    get_info("/etc/os-release", name_needle, os.name, sizeof(os.name));
+    char *os_name_cleanup = (strstr(os.name, "=")) + 2;
+    char *os_char_toRemove = strrchr(os.name, '"');
     *os_char_toRemove = '\0';
-    printf("Operating System: %s \n", os_result_cleanup);
+    printf("Operating System: %s \n", os_name_cleanup);
 
     //KERNEL VERSION BLOCK - - - - - - - - - - -
     get_info("/proc/version", kernel_needle, kernel_result, sizeof(kernel_result));
