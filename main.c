@@ -63,14 +63,15 @@ int main() {
     typedef struct{
         char name[100];
         char kernel_version[150];
+        char cpu[100];
+        char memory_usage[100];
     } os_data; os_data os;
 
     char name_needle[12] = "PRETTY_NAME";
     char kernel_needle[14] = "Linux version";
     char cpu_needle[11] = "model name";
-    char cpu_result[100];
     char memory_needle[7] = "Active";
-    char memory_result[100];
+
 
     //OS VERSION BLOCK - - - - - - - - - - - - - -
     get_info("/etc/os-release", name_needle, os.name, sizeof(os.name));
@@ -87,16 +88,16 @@ int main() {
     printf("Kernel Version: %s \n", kernel_cleanup);
 
     //CPU MODEL BLOCK - - - - - - - - - - - - -
-    get_info("/proc/cpuinfo", cpu_needle, cpu_result, sizeof(cpu_result));
-    char *cpu_cleanup = (strstr(cpu_result, ":")) + 2;
+    get_info("/proc/cpuinfo", cpu_needle, os.cpu, sizeof(os.cpu));
+    char *cpu_cleanup = (strstr(os.cpu, ":")) + 2;
     printf("CPU model: %s", cpu_cleanup);
 
     //MEMORY USAGE BLOCK - - - - - - - - - - -
     int kilobytes = 0;
     int megabytes = 0;
     int gigabytes = 0;
-    get_info("/proc/meminfo", memory_needle, memory_result, sizeof(memory_result));
-    sscanf(memory_result, "Active:          %d", &kilobytes); //this extracts the kilobytes value
+    get_info("/proc/meminfo", memory_needle, os.memory_usage, sizeof(os.memory_usage));
+    sscanf(os.memory_usage, "Active:          %d", &kilobytes); //this extracts the kilobytes value
     convert_to_readable(&kilobytes, &megabytes, &gigabytes, 1024); //no using google to figure out your ram usage
     printf("Memory Usage: %d GB %d MB %d KB \n", gigabytes, megabytes, kilobytes);
 
