@@ -62,11 +62,11 @@ void get_uptime(char *filename){
 int main() {
     typedef struct{
         char name[100];
+        char kernel_version[150];
     } os_data; os_data os;
 
     char name_needle[12] = "PRETTY_NAME";
     char kernel_needle[14] = "Linux version";
-    char kernel_result[150];
     char cpu_needle[11] = "model name";
     char cpu_result[100];
     char memory_needle[7] = "Active";
@@ -80,10 +80,10 @@ int main() {
     printf("Operating System: %s \n", os_name_cleanup);
 
     //KERNEL VERSION BLOCK - - - - - - - - - - -
-    get_info("/proc/version", kernel_needle, kernel_result, sizeof(kernel_result));
-    char *kernel_toRemovefrom = (strstr(kernel_result, "(")) - 1; //Best way i found to cut out the random data that follows the kernel release
+    get_info("/proc/version", kernel_needle, os.kernel_version, sizeof(os.kernel_version));
+    char *kernel_toRemovefrom = (strstr(os.kernel_version, "(")) - 1; //Best way i found to cut out the random data that follows the kernel release
     *kernel_toRemovefrom = '\0';
-    char *kernel_cleanup = (strstr(kernel_result, "n ")) + 2; //best way i found to cut out "Linux Version"
+    char *kernel_cleanup = (strstr(os.kernel_version, "n ")) + 2; //best way i found to cut out "Linux Version"
     printf("Kernel Version: %s \n", kernel_cleanup);
 
     //CPU MODEL BLOCK - - - - - - - - - - - - -
