@@ -72,7 +72,6 @@ void get_uptime(char *filename){
 
 
 int main() {
-    os.memory.usage_gigabytes = 0;
     char name_needle[12] = "PRETTY_NAME";
     char kernel_needle[14] = "Linux version";
     char cpu_needle[11] = "model name";
