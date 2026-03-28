@@ -15,6 +15,12 @@ typedef struct{
         int usage_megabytes;
         int usage_gigabytes;
     }memory;
+    struct{
+        char raw[100];
+        int seconds;
+        int minutes;
+        int hours;
+    }uptime;
 } os_data; os_data os;
 
 void get_info(char *filename, char *needle, char *data, int size){
@@ -49,11 +55,7 @@ void convert_to_readable(int *small_unit, int *mid_unit, int *large_unit, int ma
     }
 }
 
-void get_uptime(char *filename){
-    char data[100];
-    int hours = 0;
-    int minutes = 0;
-    int seconds = 0;
+void get_uptime(char *filename, char *data){
 
     FILE *pointer = fopen(filename, "r");
     if (pointer == NULL) {
@@ -61,11 +63,6 @@ void get_uptime(char *filename){
         return; //same as the first function, probably should've separated this
     }
     fgets(data, sizeof(data), pointer);
-
-    //convertion to readable metrics incoming
-    sscanf(data, "%d", &seconds);
-    convert_to_readable(&seconds, &minutes, &hours, 60);
-    printf(BCYN "Uptime: " MAG "%d h %d m %d s \n", hours, minutes, seconds);
 
     if (fclose(pointer) == EOF){
         printf("Error Closing File");
@@ -106,6 +103,11 @@ int main() {
     convert_to_readable(&os.memory.usage_kilobytes, &os.memory.usage_megabytes, &os.memory.usage_gigabytes, 1024); //no using google to figure out your ram usage
     printf(BCYN "Memory Usage: " MAG "%d GB %d MB %d KB \n", os.memory.usage_gigabytes, os.memory.usage_megabytes, os.memory.usage_kilobytes);
 
-    get_uptime("/proc/uptime"); //wow only one line for this one
+    get_uptime("/proc/uptime", os.uptime.raw);
+    sscanf(os.uptime.raw, "%d", &os.uptime.seconds);
+    convert_to_readable(&os.uptime.seconds, &os.uptime.minutes, &os.uptime.hours, 60);
+    printf(BCYN "Uptime: " MAG "%d h %d m %d s \n", os.uptime.hours, os.uptime.minutes, os.uptime.seconds); //wow only one line for this one
+
+    printf(DFL);
     return 0;
 }
