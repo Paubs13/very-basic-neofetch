@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#define DFL "\033[0m" //Default Colour
+#define GRN "\e[0;32m" // Green
+#define MAG "\e[0;35m" // Magenta
+#define BCYN "\e[1;36m" // Bold Cyan
 
 typedef struct{
     char name[100];
@@ -61,7 +65,7 @@ void get_uptime(char *filename){
     //convertion to readable metrics incoming
     sscanf(data, "%d", &seconds);
     convert_to_readable(&seconds, &minutes, &hours, 60);
-    printf("Uptime: %d h %d m %d s \n", hours, minutes, seconds);
+    printf(BCYN "Uptime: " MAG "%d h %d m %d s \n", hours, minutes, seconds);
 
     if (fclose(pointer) == EOF){
         printf("Error Closing File");
@@ -82,25 +86,25 @@ int main() {
     char *os_name_cleanup = (strstr(os.name, "=")) + 2;
     char *os_char_toRemove = strrchr(os.name, '"');
     *os_char_toRemove = '\0';
-    printf("Operating System: %s \n", os_name_cleanup);
+    printf(BCYN "Operating System: " MAG "%s \n", os_name_cleanup);
 
     //KERNEL VERSION BLOCK - - - - - - - - - - -
     get_info("/proc/version", kernel_needle, os.kernel_version, sizeof(os.kernel_version));
     char *kernel_toRemovefrom = (strstr(os.kernel_version, "(")) - 1; //Best way i found to cut out the random data that follows the kernel release
     *kernel_toRemovefrom = '\0';
     char *kernel_cleanup = (strstr(os.kernel_version, "n ")) + 2; //best way i found to cut out "Linux Version"
-    printf("Kernel Version: %s \n", kernel_cleanup);
+    printf(BCYN "Kernel Version: " MAG "%s \n", kernel_cleanup);
 
     //CPU MODEL BLOCK - - - - - - - - - - - - -
     get_info("/proc/cpuinfo", cpu_needle, os.cpu, sizeof(os.cpu));
     char *cpu_cleanup = (strstr(os.cpu, ":")) + 2;
-    printf("CPU model: %s", cpu_cleanup);
+    printf(BCYN "CPU model: " MAG "%s", cpu_cleanup);
 
     //MEMORY USAGE BLOCK - - - - - - - - - - -
     get_info("/proc/meminfo", memory_needle, os.memory.usage, sizeof(os.memory.usage));
     sscanf(os.memory.usage, "Active:          %d", &os.memory.usage_kilobytes); //this extracts the kilobytes value
     convert_to_readable(&os.memory.usage_kilobytes, &os.memory.usage_megabytes, &os.memory.usage_gigabytes, 1024); //no using google to figure out your ram usage
-    printf("Memory Usage: %d GB %d MB %d KB \n", os.memory.usage_gigabytes, os.memory.usage_megabytes, os.memory.usage_kilobytes);
+    printf(BCYN "Memory Usage: " MAG "%d GB %d MB %d KB \n", os.memory.usage_gigabytes, os.memory.usage_megabytes, os.memory.usage_kilobytes);
 
     get_uptime("/proc/uptime"); //wow only one line for this one
     return 0;
